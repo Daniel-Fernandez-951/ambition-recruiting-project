@@ -22,7 +22,7 @@ class Starship(models.Model):
     # The number of personnel needed to run or pilot the starship
     crew = models.IntegerField(null=True)
     # The number of non-essential people this starship can transport
-    passengers = models.IntegerField()
+    passengers = models.IntegerField(null=True)
     # Maximum number of kilograms that this starship can transport
     cargo_capacity = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
