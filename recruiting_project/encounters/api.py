@@ -8,8 +8,12 @@ class StarshipsModelViewSet(ModelViewSet):
     """
     Model viewset for starships API
     """
-    queryset = Starship.objects.all()
     serializer_class = StarshipSerializer
+
+    def get_queryset(self):
+        type_ac = self.request.query_params.dict()
+        queryset = Starship.objects.filter(**type_ac)
+        return queryset
 
 
 class EncountersModelViewSet(ModelViewSet):
