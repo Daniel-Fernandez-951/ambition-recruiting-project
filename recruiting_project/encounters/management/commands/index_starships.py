@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from django.core.management.base import BaseCommand
-from manager_utils import upsert
+from manager_utils import upsert, bulk_upsert
 
 from recruiting_project.encounters.models import StarshipClass, Starship
 from recruiting_project.encounters.swapi import SWAPI
@@ -22,18 +22,19 @@ class Command(BaseCommand):
                     StarshipClass.objects,
                     name=starship['starship_class']
                 )
-                upsert(
-                    Starship.objects,
-                    updates={
-                        'swapi_url': starship.get('url'),
-                        'name': starship.get('name'),
-                        'model': starship.get('model'),
-                        'starship_class': starship_class,
-                        'cost_in_credits': self._get_number_or_none(starship, 'cost_in_credits'),
-                        'crew': self._get_number_or_none(starship, 'crew'),
-                        'passengers': self._get_number_or_none(starship, 'passengers'),
-                        'cargo_capacity': self._get_number_or_none(starship, 'cargo_capacity'),
-                    }
+                bulk_upsert(
+                    Starship.objects.all(), [
+                        Starship(
+                        swapi_url=starship.get('url'),
+                        name=starship.get('name'),
+                        model=starship.get('model'),
+                        starship_class=starship_class,
+                        cost_in_credits=self._get_number_or_none(starship, 'cost_in_credits'),
+                        crew=self._get_number_or_none(starship, 'crew'),
+                        passengers=self._get_number_or_none(starship, 'passengers'),
+                        cargo_capacity=self._get_number_or_none(starship, 'cargo_capacity'))
+                    ],
+                    unique_fields=['starship_class']
                 )
 
     def _get_number_or_none(self, obj, field_key):
